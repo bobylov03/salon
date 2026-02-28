@@ -1,4 +1,4 @@
-// pages/Login.jsx (упрощенная версия)
+// pages/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,6 +20,7 @@ import {
   ShopOutlined,
   SafetyOutlined,
 } from '@ant-design/icons';
+import { authAPI } from '../services/api';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -30,33 +31,29 @@ const Login = () => {
 
   const onFinish = async (values) => {
     setLoading(true);
-    
+
     try {
-      console.log('Login attempt:', values);
-      
-      // Имитируем задержку сети
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Просто сохраняем пользователя в localStorage
+      const response = await authAPI.login(values.username, values.password);
+      const { access_token } = response.data;
+
       const user = {
         id: 1,
-        email: values.email,
+        username: values.username,
         name: 'Администратор',
         role: 'admin',
         first_name: 'Admin',
-        last_name: 'User'
+        last_name: 'User',
       };
-      
+
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', 'demo-token-' + Date.now());
-      
+      localStorage.setItem('token', access_token);
+
       message.success('Добро пожаловать!');
       navigate('/');
-      
     } catch (error) {
-      message.error('Ошибка входа');
-      console.error('Login error:', error);
+      const detail = error.response?.data?.detail;
+      message.error(detail || 'Неверный логин или пароль');
     } finally {
       setLoading(false);
     }
@@ -102,16 +99,13 @@ const Login = () => {
                   size="large"
                 >
                   <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                      { required: true, message: 'Введите email' },
-                      { type: 'email', message: 'Введите корректный email' }
-                    ]}
+                    name="username"
+                    label="Логин"
+                    rules={[{ required: true, message: 'Введите логин' }]}
                   >
                     <Input
                       prefix={<UserOutlined />}
-                      placeholder="admin@salon.com"
+                      placeholder="salon_admin"
                     />
                   </Form.Item>
 
@@ -142,17 +136,6 @@ const Login = () => {
                   </Form.Item>
                 </Form>
 
-                {/* Информация */}
-                <div style={{ 
-                  padding: '12px', 
-                  background: '#f6ffed',
-                  borderRadius: '6px',
-                  border: '1px solid #b7eb8f'
-                }}>
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                    <strong>Демо-режим:</strong> Введите любые данные для входа
-                  </Text>
-                </div>
               </Space>
             </Card>
           </Col>
