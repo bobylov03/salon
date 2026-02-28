@@ -14,8 +14,6 @@ import Schedule from './pages/Schedule';
 import Services from './pages/Services';
 import Appointments from './pages/Appointments';
 import Clients from './pages/Clients';
-import Bonuses from './pages/Bonuses';
-import Logs from './pages/Logs';
 
 const queryClient = new QueryClient();
 
@@ -51,8 +49,6 @@ function App() {
               <Route path="services" element={<Services />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="clients" element={<Clients />} />
-              <Route path="bonuses" element={<Bonuses />} />
-              <Route path="logs" element={<Logs />} />
             </Route>
             
             {/* Редирект на логин для несуществующих маршрутов */}
