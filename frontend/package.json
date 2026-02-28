@@ -10,6 +10,7 @@
     "axios": "^1.6.2",
     "antd": "^5.12.5",
     "@ant-design/icons": "^5.2.6",
+    "@tanstack/react-query": "^5.0.0",
     "dayjs": "^1.11.10"
   },
   "scripts": {

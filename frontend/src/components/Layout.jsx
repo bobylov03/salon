@@ -9,10 +9,7 @@ import {
   ToolOutlined,
   ScheduleOutlined,
   TeamOutlined,
-  GiftOutlined,
   LogoutOutlined,
-  FileTextOutlined,
-  PieChartOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Avatar, Dropdown, Space, Typography } from 'antd';
 import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
@@ -74,17 +71,6 @@ const AdminLayout = () => {
       icon: <TeamOutlined />,
       label: <Link to="/clients">Клиенты</Link>,
     },
-    {
-      key: 'bonuses',
-      icon: <GiftOutlined />,
-      label: <Link to="/bonuses">Бонусная система</Link>,
-    },
-
-    {
-      key: 'logs',
-      icon: <FileTextOutlined />,
-      label: <Link to="/logs">Логи действий</Link>,
-    },
   ];
 
   const userMenuItems = [
@@ -118,9 +104,7 @@ const AdminLayout = () => {
     }
     if (path.startsWith('/appointments')) return ['appointments'];
     if (path.startsWith('/clients')) return ['clients'];
-    if (path.startsWith('/bonuses')) return ['bonuses'];
     if (path.startsWith('/analytics')) return ['analytics'];
-    if (path.startsWith('/logs')) return ['logs'];
     return ['dashboard'];
   };
 
@@ -314,9 +298,7 @@ const AdminLayout = () => {
                 {location.pathname.startsWith('/services') && 'Услуги'}
                 {location.pathname.startsWith('/appointments') && 'Записи'}
                 {location.pathname.startsWith('/clients') && 'Клиенты'}
-                {location.pathname.startsWith('/bonuses') && 'Бонусная система'}
                 {location.pathname.startsWith('/analytics') && 'Аналитика'}
-                {location.pathname.startsWith('/logs') && 'Логи действий'}
               </Text>
               {location.pathname !== '/' && (
                 <Text style={{ 
@@ -331,9 +313,7 @@ const AdminLayout = () => {
                   {location.pathname.startsWith('/services') && 'Каталог услуг и категорий'}
                   {location.pathname.startsWith('/appointments') && 'Записи клиентов'}
                   {location.pathname.startsWith('/clients') && 'База клиентов'}
-                  {location.pathname.startsWith('/bonuses') && 'Бонусные баллы и акции'}
                   {location.pathname.startsWith('/analytics') && 'Статистика и отчеты'}
-                  {location.pathname.startsWith('/logs') && 'История действий'}
                 </Text>
               )}
             </div>
