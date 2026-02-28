@@ -13,7 +13,7 @@ class Settings:
     DEBUG = os.getenv("DEBUG", "true").lower() == "true"
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "8000"))
-    BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+    BASE_URL = os.getenv("BASE_URL", "")
     
     # Безопасность
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")

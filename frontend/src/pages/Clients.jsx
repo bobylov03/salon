@@ -64,7 +64,7 @@ const Clients = () => {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8000/clients', {
+      const response = await axios.get('/clients', {
         params: {
           page: pagination.current,
           per_page: pagination.pageSize,
@@ -87,7 +87,7 @@ const Clients = () => {
 
   const fetchClientAppointments = async (clientId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/clients/${clientId}/recent-appointments`, {
+      const response = await axios.get(`/clients/${clientId}/recent-appointments`, {
         params: { limit: 10 }
       });
       setClientAppointments(response.data.appointments || []);
@@ -99,7 +99,7 @@ const Clients = () => {
 
   const fetchClientStats = async (clientId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/clients/${clientId}/stats`);
+      const response = await axios.get(`/clients/${clientId}/stats`);
       setClientStats(response.data);
     } catch (error) {
       console.error('Error fetching client stats:', error);
@@ -138,7 +138,7 @@ const Clients = () => {
       if (clientData.phone !== editingClient.phone) updateData.phone = clientData.phone;
       if (clientData.email !== editingClient.email) updateData.email = clientData.email;
       
-      await axios.put(`http://localhost:8000/clients/${editingClient.id}`, updateData, {
+      await axios.put(`/clients/${editingClient.id}`, updateData, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -147,7 +147,7 @@ const Clients = () => {
     } else {
       // Создание нового клиента - отправляем как простой объект
       // Попробуем отправить без заголовков Content-Type, чтобы FastAPI сам определил
-      const response = await axios.post('http://localhost:8000/clients', clientData);
+      const response = await axios.post('/clients', clientData);
       
       if (response.data.success) {
         message.success('Клиент успешно создан');
@@ -177,7 +177,7 @@ const Clients = () => {
           email: values.email?.trim() || '',
         };
         
-        const response = await axios.post('http://localhost:8000/clients', 
+        const response = await axios.post('/clients', 
           JSON.stringify(clientData),
           {
             headers: {
@@ -226,7 +226,7 @@ const Clients = () => {
       content: 'Все данные клиента будут удалены. Продолжить?',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8000/clients/${id}`);
+          await axios.delete(`/clients/${id}`);
           message.success('Клиент удален');
           fetchClients();
         } catch (error) {

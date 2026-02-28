@@ -31,7 +31,7 @@ class Settings:
     DEBUG = True
     HOST = "0.0.0.0"
     PORT = 8000
-    BASE_URL = "http://localhost:8000"
+    BASE_URL = os.environ.get("BASE_URL", "")
     
     # CORS - разрешаем все для разработки
     CORS_ORIGINS = ["*"]

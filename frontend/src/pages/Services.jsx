@@ -104,7 +104,7 @@ const Services = () => {
   });
 
   // Базовый URL API
-  const API_BASE_URL = 'http://localhost:8000';
+  const API_BASE_URL = '';
 
   // Утилитная функция для fetch с обработкой ошибок
   const fetchWithAuth = async (url, options = {}) => {

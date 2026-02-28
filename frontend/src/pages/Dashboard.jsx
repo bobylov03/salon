@@ -47,7 +47,7 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 // Конфигурация API
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 // Функция для запросов к API
 const fetchApi = async (endpoint, options = {}) => {

@@ -45,7 +45,7 @@ const Schedule = () => {
 
   const fetchMasters = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/masters');
+      const response = await axios.get('/masters');
       if (response.data && response.data.items) {
         setMasters(response.data.items);
       }
@@ -57,7 +57,7 @@ const Schedule = () => {
 
   const fetchMasterDetails = async (masterId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/masters/${masterId}`);
+      const response = await axios.get(`/masters/${masterId}`);
       setSelectedMasterInfo(response.data);
     } catch (error) {
       console.error('Error fetching master details:', error);
@@ -67,7 +67,7 @@ const Schedule = () => {
   const fetchMasterSchedule = async (masterId) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/schedule/masters/${masterId}`);
+      const response = await axios.get(`/schedule/masters/${masterId}`);
       setScheduleData(response.data || []);
     } catch (error) {
       console.error('Error fetching schedule:', error);
@@ -91,7 +91,7 @@ const Schedule = () => {
         const startTime = values.timeRange[0].format('HH:mm');
         const endTime = values.timeRange[1].format('HH:mm');
 
-        const response = await axios.post(`http://localhost:8000/schedule/masters/${selectedMaster}`, {
+        const response = await axios.post(`/schedule/masters/${selectedMaster}`, {
           day_of_week: editingDay,
           start_time: startTime,
           end_time: endTime
@@ -100,7 +100,7 @@ const Schedule = () => {
         message.success('График успешно сохранен');
       } else {
         // Если выходной - удаляем график (если был) или просто не добавляем
-        await axios.delete(`http://localhost:8000/schedule/masters/${selectedMaster}/days/${editingDay}`);
+        await axios.delete(`/schedule/masters/${selectedMaster}/days/${editingDay}`);
         message.success('День установлен как выходной');
       }
       
@@ -128,7 +128,7 @@ const Schedule = () => {
       cancelText: 'Отмена',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8000/schedule/masters/${selectedMaster}/days/${dayOfWeek}`);
+          await axios.delete(`/schedule/masters/${selectedMaster}/days/${dayOfWeek}`);
           message.success('График удален');
           fetchMasterSchedule(selectedMaster);
         } catch (error) {
@@ -147,7 +147,7 @@ const Schedule = () => {
       cancelText: 'Отмена',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8000/schedule/masters/${selectedMaster}/days/${dayOfWeek}`);
+          await axios.delete(`/schedule/masters/${selectedMaster}/days/${dayOfWeek}`);
           message.success('День установлен как выходной');
           fetchMasterSchedule(selectedMaster);
         } catch (error) {

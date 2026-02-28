@@ -305,7 +305,7 @@ const Appointments = () => {
         params.end_date = dayjs().format('YYYY-MM-DD');
       }
 
-      const response = await axios.get('http://localhost:8000/appointments', { params });
+      const response = await axios.get('/appointments', { params });
       setAppointments(response.data.items || response.data || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -315,7 +315,7 @@ const Appointments = () => {
 
   const fetchMasters = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/masters');
+      const response = await axios.get('/masters');
       setMasters(response.data.items || response.data || []);
       if (response.data.items?.length > 0 && !selectedMaster) {
         setSelectedMaster(response.data.items[0].id);
@@ -328,7 +328,7 @@ const Appointments = () => {
   const fetchClients = async () => {
     try {
       setLoadingClients(true);
-      const response = await axios.get('http://localhost:8000/clients', {
+      const response = await axios.get('/clients', {
         params: { 
           page: 1,
           per_page: 100,
@@ -356,7 +356,7 @@ const Appointments = () => {
       
       if (error.response?.status === 422) {
         try {
-          const response = await axios.get('http://localhost:8000/clients');
+          const response = await axios.get('/clients');
           
           let clientsData = [];
           if (response.data && response.data.items) {
@@ -385,7 +385,7 @@ const Appointments = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/services');
+      const response = await axios.get('/services');
       setServices(response.data.items || response.data || []);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -430,7 +430,7 @@ const Appointments = () => {
     setLoadingSchedule(true);
     try {
       // Получаем график работы мастера
-      const scheduleResponse = await axios.get(`http://localhost:8000/schedule/masters/${masterId}`);
+      const scheduleResponse = await axios.get(`/schedule/masters/${masterId}`);
       const masterSchedule = scheduleResponse.data;
       
       // Получаем записи мастера на неделю
@@ -491,16 +491,16 @@ const Appointments = () => {
           status: formattedData.status
         };
         
-        await axios.put(`http://localhost:8000/appointments/${editingAppointment.id}`, updateData);
+        await axios.put(`/appointments/${editingAppointment.id}`, updateData);
         
         // Обновляем услуги отдельно
         if (formattedData.services.length > 0) {
           // Сначала удаляем старые услуги
-          await axios.delete(`http://localhost:8000/appointments/${editingAppointment.id}/services`);
+          await axios.delete(`/appointments/${editingAppointment.id}/services`);
           
           // Добавляем новые услуги
           for (const serviceId of formattedData.services) {
-            await axios.post(`http://localhost:8000/appointments/${editingAppointment.id}/services`, {
+            await axios.post(`/appointments/${editingAppointment.id}/services`, {
               service_id: serviceId
             });
           }
@@ -508,7 +508,7 @@ const Appointments = () => {
         
         message.success('Запись обновлена');
       } else {
-        const response = await axios.post('http://localhost:8000/appointments', formattedData);
+        const response = await axios.post('/appointments', formattedData);
         console.log("Ответ сервера:", response.data);
         message.success('Запись создана');
       }
@@ -549,10 +549,10 @@ const Appointments = () => {
       
       let response;
       try {
-        response = await axios.post('http://localhost:8000/clients', clientData);
+        response = await axios.post('/clients', clientData);
       } catch (firstError) {
         if (firstError.response?.status === 422 || firstError.response?.status === 400) {
-          response = await axios.post('http://localhost:8000/clients', 
+          response = await axios.post('/clients', 
             JSON.stringify(clientData),
             {
               headers: {
@@ -621,7 +621,7 @@ const Appointments = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await axios.put(`http://localhost:8000/appointments/${id}/status`, null, {
+      await axios.put(`/appointments/${id}/status`, null, {
         params: { status: newStatus }
       });
       message.success(`Статус изменен на: ${statusLabels[newStatus]}`);
@@ -653,7 +653,7 @@ const Appointments = () => {
       cancelText: 'Отмена',
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8000/appointments/${id}`);
+          await axios.delete(`/appointments/${id}`);
           message.success('Запись удалена');
           fetchAppointments();
         } catch (error) {
