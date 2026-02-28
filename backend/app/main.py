@@ -521,6 +521,18 @@ app.add_middleware(
     expose_headers=["*"]
 )
 
+# Middleware: strip /api prefix so frontend /api/... calls work in production
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class StripApiPrefixMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if request.scope["path"].startswith("/api/"):
+            request.scope["path"] = request.scope["path"][4:]
+            request.scope["raw_path"] = request.scope["path"].encode("utf-8")
+        return await call_next(request)
+
+app.add_middleware(StripApiPrefixMiddleware)
+
 # Подключаем статические файлы для загруженных фото
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
@@ -3334,19 +3346,24 @@ async def update_service(service_id: int, service_data: ServiceUpdate):
 @app.delete("/services/{service_id}")
 async def delete_service(service_id: int):
     """Удаление/деактивация услуги"""
-    logger.info(f"Delete service {service_id} request")
-    
+    logger.info(f"Delete service {service_id} request, DB_PATH={DB_PATH}")
+
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        
-        # Проверяем существование услуги
-        cursor.execute("SELECT * FROM services WHERE id = ?", (service_id,))
+
+        # Проверяем существование услуги (включая неактивные)
+        cursor.execute("SELECT id, is_active FROM services WHERE id = ?", (service_id,))
         existing_service = cursor.fetchone()
+        logger.info(f"Service lookup result: {existing_service}")
         if not existing_service:
+            # Выводим все ID для отладки
+            cursor.execute("SELECT id FROM services")
+            all_ids = [r[0] for r in cursor.fetchall()]
+            logger.warning(f"Service {service_id} not found. All service IDs in DB: {all_ids}")
             raise HTTPException(
                 status_code=404,
-                detail="Услуга не найдена"
+                detail=f"Услуга не найдена (ID={service_id})"
             )
         
         # Вместо удаления деактивируем
