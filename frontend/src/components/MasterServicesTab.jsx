@@ -153,16 +153,14 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
   const handleAddService = async (serviceId, isPrimary = false) => {
     try {
       console.log('Adding service:', { masterId, serviceId, isPrimary });
-      
+
+      const formData = new FormData();
+      formData.append('service_id', serviceId.toString());
+      formData.append('is_primary', isPrimary.toString());
+
       const response = await fetch(`/api/masters/${masterId}/services`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          service_id: serviceId,
-          is_primary: isPrimary
-        }),
+        body: formData,
       });
       
       console.log('Response status:', response.status);
@@ -228,15 +226,12 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
       });
       
       // Затем создаем новую с обновленным статусом
+      const fd = new FormData();
+      fd.append('service_id', service.service_id.toString());
+      fd.append('is_primary', newStatus.toString());
       const response = await fetch(`/api/masters/${masterId}/services`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          service_id: service.service_id,
-          is_primary: newStatus
-        }),
+        body: fd,
       });
       
       if (response.ok) {
@@ -262,24 +257,21 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
     
     try {
       setLoading(true);
-      const promises = serviceIds.map(serviceId => 
-        fetch(`/api/masters/${masterId}/services`, {
+      const promises = serviceIds.map(serviceId => {
+        const fd = new FormData();
+        fd.append('service_id', serviceId.toString());
+        fd.append('is_primary', isPrimary.toString());
+        return fetch(`/api/masters/${masterId}/services`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            service_id: Number(serviceId),
-            is_primary: isPrimary
-          }),
-        })
-      );
-      
+          body: fd,
+        });
+      });
+
       const responses = await Promise.allSettled(promises);
-      
+
       let successCount = 0;
       let errorCount = 0;
-      
+
       responses.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value.ok) {
           successCount++;
@@ -288,15 +280,15 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
           console.error(`Ошибка добавления услуги ${serviceIds[index]}:`, result.reason || result.value);
         }
       });
-      
+
       if (successCount > 0) {
         message.success(`Успешно добавлено ${successCount} услуг`);
       }
-      
+
       if (errorCount > 0) {
         message.warning(`Не удалось добавить ${errorCount} услуг`);
       }
-      
+
       // Сбрасываем выбранные услуги
       setSelectedAvailableServices(new Set());
       fetchMasterServices();
@@ -323,24 +315,21 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
       }
       
       setLoading(true);
-      const promises = serviceIds.map(serviceId => 
-        fetch(`/api/masters/${masterId}/services`, {
+      const promises = serviceIds.map(serviceId => {
+        const fd = new FormData();
+        fd.append('service_id', serviceId.toString());
+        fd.append('is_primary', isPrimary.toString());
+        return fetch(`/api/masters/${masterId}/services`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            service_id: Number(serviceId),
-            is_primary: isPrimary
-          }),
-        })
-      );
-      
+          body: fd,
+        });
+      });
+
       const responses = await Promise.allSettled(promises);
-      
+
       let successCount = 0;
       let errorCount = 0;
-      
+
       responses.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value.ok) {
           successCount++;
@@ -348,15 +337,15 @@ const MasterServicesTab = ({ masterId, masterName, onServicesUpdated }) => {
           errorCount++;
         }
       });
-      
+
       if (successCount > 0) {
         message.success(`Добавлено ${successCount} услуг`);
       }
-      
+
       if (errorCount > 0) {
         message.warning(`Не удалось добавить ${errorCount} услуг`);
       }
-      
+
       setModalVisible(false);
       form.resetFields();
       setSelectedServices([]);
