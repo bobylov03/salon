@@ -35,6 +35,9 @@ COPY --from=frontend-builder /frontend/dist /app/static/frontend
 
 RUN mkdir -p uploads/masters
 
+# Копируем реальную базу данных как seed (используется при первом запуске если volume пустой)
+COPY backend/salon.db /app/salon_seed.db
+
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
