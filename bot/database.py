@@ -20,14 +20,17 @@ logger = logging.getLogger(__name__)
 class Database:
     def __init__(self, db_path: str = None):
         if db_path is None:
-            # Автоматически определяем путь к БД
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            # Пробуем найти ../backend/salon.db на уровень выше
-            db_path = os.path.join(os.path.dirname(current_dir), '../backend/salon.db')
-            if not os.path.exists(db_path):
-                # Пробуем найти в текущей папке
-                db_path = os.path.join(current_dir, '../backend/salon.db')
-        
+            if Config.DATABASE_PATH:
+                # Используем путь из переменной окружения (Docker/Railway)
+                db_path = Config.DATABASE_PATH
+            else:
+                # Автоматически определяем путь к БД для локальной разработки
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                project_root = os.path.dirname(current_dir)
+                db_path = os.path.join(project_root, 'salon.db')
+                if not os.path.exists(db_path):
+                    db_path = os.path.join(project_root, 'backend', 'salon.db')
+
         self.db_path = db_path
         logger.info(f"Используется база данных: {self.db_path}")
     
