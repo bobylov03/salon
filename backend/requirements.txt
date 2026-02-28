@@ -1,0 +1,24 @@
+# Основные
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Валидация и настройки
+pydantic==2.5.0
+pydantic-settings==2.1.0  # Важно: используем pydantic-settings вместо устаревшего BaseSettings
+
+# Безопасность
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.2
+
+# База данных
+sqlite3
+
+# Утилиты
+python-dateutil==2.8.2
+python-magic==0.4.27  # Для определения MIME типа файлов
+Pillow==10.1.0  # Для работы с изображениями
+
+# Логирование
+structlog==23.2.0
