@@ -37,16 +37,5 @@ class Config:
         """Проверка конфигурации"""
         if not cls.BOT_TOKEN:
             raise ValueError("BOT_TOKEN не установлен в .env файле")
-        
-        # Получаем абсолютный путь к БД
-        import os
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(current_dir, cls.DATABASE_PATH)
-        
-        if not os.path.exists(db_path):
-            # Пробуем найти на уровень выше
-            db_path = os.path.join(os.path.dirname(current_dir), 'salon.db')
-            if not os.path.exists(db_path):
-                raise FileNotFoundError(f"База данных не найдена по пути: {db_path}")
-        
+        # БД создаётся backend при старте — не проверяем её наличие здесь
         return True

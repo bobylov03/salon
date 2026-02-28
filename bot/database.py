@@ -20,14 +20,15 @@ logger = logging.getLogger(__name__)
 class Database:
     def __init__(self, db_path: str = None):
         if db_path is None:
-            # Автоматически определяем путь к БД
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            # Пробуем найти ../backend/salon.db на уровень выше
-            db_path = os.path.join(os.path.dirname(current_dir), '../backend/salon.db')
-            if not os.path.exists(db_path):
-                # Пробуем найти в текущей папке
-                db_path = os.path.join(current_dir, '../backend/salon.db')
-        
+            # Сначала проверяем переменную окружения DATABASE_PATH
+            env_path = os.environ.get('DATABASE_PATH')
+            if env_path:
+                db_path = env_path
+            else:
+                # Fallback: salon.db на уровень выше от папки bot
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                db_path = os.path.join(current_dir, '../salon.db')
+
         self.db_path = db_path
         logger.info(f"Используется база данных: {self.db_path}")
     
