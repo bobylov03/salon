@@ -1272,6 +1272,97 @@ async def get_available_services_for_master(
 
 # ==================== ОБНОВЛЕННЫЕ ENDPOINT ДЛЯ МАСТЕРОВ ====================
 
+@app.post("/masters")
+async def create_master(
+    first_name: str = Form(...),
+    last_name: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
+    email: Optional[str] = Form(None),
+    telegram_id: Optional[str] = Form(None),
+    qualification: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    is_active: bool = Form(True),
+    photo: Optional[UploadFile] = File(None),
+):
+    """Создание нового мастера"""
+    conn = None
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Обработка telegram_id
+        telegram_id_value = None
+        if telegram_id:
+            t = str(telegram_id).strip()
+            if t:
+                try:
+                    telegram_id_value = int(t)
+                except ValueError:
+                    telegram_id_value = t
+                # Проверяем уникальность
+                cursor.execute("SELECT id FROM users WHERE telegram_id = ?", (telegram_id_value,))
+                if cursor.fetchone():
+                    raise HTTPException(status_code=400, detail="Telegram ID уже используется")
+
+        # Проверяем уникальность телефона
+        if phone:
+            cursor.execute("SELECT id FROM users WHERE phone = ?", (phone,))
+            if cursor.fetchone():
+                raise HTTPException(status_code=400, detail="Телефон уже используется")
+
+        # Проверяем уникальность email
+        if email:
+            cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+            if cursor.fetchone():
+                raise HTTPException(status_code=400, detail="Email уже используется")
+
+        # Создаём пользователя с ролью master
+        cursor.execute(
+            "INSERT INTO users (telegram_id, role, first_name, last_name, phone, email, language) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (telegram_id_value, 'master', first_name, last_name or '', phone, email, 'ru')
+        )
+        user_id = cursor.lastrowid
+
+        # Сохраняем фото если есть
+        photo_filename = None
+        if photo and photo.filename:
+            photo_filename = save_master_photo(photo)
+
+        # Создаём запись мастера
+        cursor.execute(
+            "INSERT INTO masters (user_id, qualification, description, is_active, photo) VALUES (?, ?, ?, ?, ?)",
+            (user_id, qualification, description, int(is_active), photo_filename)
+        )
+        master_id = cursor.lastrowid
+        conn.commit()
+
+        # Возвращаем созданного мастера
+        cursor.execute("""
+            SELECT m.*, u.first_name, u.last_name, u.phone, u.email, u.telegram_id
+            FROM masters m JOIN users u ON m.user_id = u.id
+            WHERE m.id = ?
+        """, (master_id,))
+        row = cursor.fetchone()
+        result = {key: row[key] for key in row.keys()}
+        if result.get("photo"):
+            result["photo_url"] = f"{settings.BASE_URL}/uploads/masters/{result['photo']}"
+        else:
+            result["photo_url"] = None
+        conn.close()
+        return result
+
+    except HTTPException:
+        if conn:
+            conn.close()
+        raise
+    except Exception as e:
+        if conn:
+            conn.close()
+        logger.error(f"Error creating master: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/masters")
 async def get_masters(
     page: int = Query(1, ge=1),
