@@ -15,8 +15,7 @@ active_tokens = {}
 
 def authenticate_user(username: str, password: str):
     """Аутентификация пользователя"""
-    # Фиксированные креды для демо
-    if username == "admin@salon.com" and password == "admin123":
+    if username == "salon_admin" and password == "admin2026@":
         return {"id": 1, "role": "admin", "email": "admin@salon.com", "first_name": "Admin", "last_name": "User"}
     return None
 

@@ -72,32 +72,17 @@ api.interceptors.response.use(
   }
 );
 
-// ==================== ПРОСТОЙ AUTH API (ДЕМО РЕЖИМ) ====================
+// ==================== AUTH API ====================
 export const authAPI = {
-  // Демо-функция входа
-  login: async (email, password) => {
-    console.log('🔐 Demo login:', email);
-    
-    // Имитируем задержку сети
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Возвращаем демо-данные
-    return {
-      data: {
-        access_token: 'demo-token-' + Date.now(),
-        token_type: 'bearer',
-        user: {
-          id: 1,
-          email: email,
-          role: 'admin',
-          first_name: 'Admin',
-          last_name: 'User',
-          phone: '+79991234567'
-        }
-      }
-    };
+  login: async (username, password) => {
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+    return api.post('/auth/login', formData, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
   },
-  
+
   // Выход
   logout: () => {
     localStorage.removeItem('token');
