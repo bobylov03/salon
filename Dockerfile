@@ -4,12 +4,12 @@ FROM node:18-slim AS frontend-builder
 WORKDIR /frontend
 
 COPY frontend/package*.json ./
-RUN npm install && chmod -R +x node_modules/.bin
+RUN npm install
 
 COPY frontend/ .
 
 # Build with empty VITE_API_URL so frontend uses relative paths (same host)
-RUN VITE_API_URL="" npm run build
+RUN VITE_API_URL="" node node_modules/vite/bin/vite.js build
 
 # Stage 2: Python backend + bot
 FROM python:3.11-slim
