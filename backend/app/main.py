@@ -3903,29 +3903,6 @@ async def remove_schedule_day(master_id: int, day_of_week: int):
 
 # ==================== ОСНОВНЫЕ ENDPOINTS ====================
 
-@app.get("/")
-async def root():
-    """Корневой endpoint"""
-    return {
-        "message": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "status": "running",
-        "timestamp": datetime.now().isoformat(),
-        "docs": "/docs",
-        "endpoints": {
-            "appointments": "/appointments",
-            "clients": "/clients",
-            "masters": "/masters/*",
-            "services": "/services/*",
-            "categories": "/services/categories/*",
-            "analytics": "/analytics/*",
-            "schedule": "/schedule/masters/*",
-            "health": "/health",
-            "test": "/test/*",
-            "master_services": "/masters/{id}/services",  # НОВЫЙ endpoint
-            "service_masters": "/services/{id}/masters",   # НОВЫЙ endpoint
-        }
-    }
 
 @app.get("/health")
 async def health_check():
