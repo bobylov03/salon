@@ -4,7 +4,7 @@ FROM node:18-slim AS frontend-builder
 WORKDIR /frontend
 
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm install --unsafe-perm
 
 COPY frontend/ .
 
