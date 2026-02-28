@@ -1,4 +1,5 @@
 # main.py (исправленная версия с исправлением синтаксической ошибки)
+from app.auth import router as auth_router
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Depends, Query, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -1017,6 +1018,9 @@ async def test_endpoint():
 
 # Регистрируем роутер аналитики
 app.include_router(analytics_router)
+
+# Регистрируем роутер аутентификации
+app.include_router(auth_router)
 
 # ==================== API ДЛЯ СВЯЗИ МАСТЕР-УСЛУГИ ====================
 
