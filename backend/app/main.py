@@ -9,6 +9,8 @@ from pydantic import BaseModel
 import logging
 import sqlite3
 import os
+
+DB_PATH = os.environ.get("DATABASE_PATH", "/data/salon.db")
 from datetime import datetime, date, timedelta
 import uuid
 from pathlib import Path
@@ -258,7 +260,7 @@ def get_unique_client_telegram_id(cursor):
 
 def get_db_connection():
     """Создание соединения с БД"""
-    conn = sqlite3.connect("salon.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -266,13 +268,13 @@ def init_database():
     """Инициализация базы данных"""
     try:
         logger.info("Initializing database...")
-        
-        db_path = "salon.db"
-        
-        if not os.path.exists(db_path):
-            logger.info(f"Database file not found, creating: {db_path}")
-        
-        conn = sqlite3.connect(db_path)
+
+        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+        if not os.path.exists(DB_PATH):
+            logger.info(f"Database file not found, creating: {DB_PATH}")
+
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -1430,7 +1432,7 @@ async def get_masters(
     offset = (page - 1) * per_page
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -1549,7 +1551,7 @@ async def get_appointments(
     offset = (page - 1) * per_page
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -1659,7 +1661,7 @@ async def create_appointment(appointment_data: AppointmentCreate):
     logger.info(f"Create appointment request: {appointment_data}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование клиента
@@ -1741,7 +1743,7 @@ async def update_appointment(appointment_id: int, appointment_data: AppointmentU
     logger.info(f"Update appointment {appointment_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование записи
@@ -1822,7 +1824,7 @@ async def update_appointment_status(
     logger.info(f"Update appointment {appointment_id} status to {status}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование записи
@@ -1857,7 +1859,7 @@ async def delete_appointment(appointment_id: int):
     logger.info(f"Delete appointment {appointment_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование записи
@@ -1892,7 +1894,7 @@ async def delete_appointment_services(appointment_id: int):
     logger.info(f"Delete appointment {appointment_id} services")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование записи
@@ -1921,7 +1923,7 @@ async def add_appointment_service(appointment_id: int, service_data: dict):
     logger.info(f"Add service to appointment {appointment_id}: {service_data}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование записи
@@ -1970,7 +1972,7 @@ async def get_clients(
     offset = (page - 1) * per_page
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2048,7 +2050,7 @@ async def create_client_json(client_data: ClientCreate):
     logger.info(f"Create client request (JSON): {client_data}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем обязательные поля
@@ -2125,7 +2127,7 @@ async def create_client_form(
     logger.info(f"Create client request (Form): {first_name} {last_name}, {phone}, {email}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем обязательные поля
@@ -2198,7 +2200,7 @@ async def update_client(client_id: int, client_data: ClientUpdate):
     logger.info(f"Update client {client_id} request: {client_data}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование клиента
@@ -2269,7 +2271,7 @@ async def delete_client(client_id: int):
     logger.info(f"Delete client {client_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование клиента
@@ -2329,7 +2331,7 @@ async def get_client_stats(client_id: int):
     logger.info(f"Get client {client_id} stats")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2437,7 +2439,7 @@ async def get_client_recent_appointments(
     logger.info(f"Get client {client_id} recent appointments")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2507,7 +2509,7 @@ async def get_categories(
     logger.info(f"Get categories request: language={language}, include_children={include_children}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2579,7 +2581,7 @@ async def get_categories_tree(
     logger.info(f"Get categories tree request: language={language}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2657,7 +2659,7 @@ async def get_category(
     logger.info(f"Get category {category_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -2705,7 +2707,7 @@ async def create_category(category_data: CategoryCreate):
     logger.info(f"Create category request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем parent_id если указан
@@ -2765,7 +2767,7 @@ async def update_category(category_id: int, category_data: CategoryUpdate):
     logger.info(f"Update category {category_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование категории
@@ -2878,7 +2880,7 @@ async def delete_category(
     logger.info(f"Delete category {category_id} request (recursive={recursive})")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование категории
@@ -3013,7 +3015,7 @@ async def get_category_stats(category_id: int, language: str = Query("ru")):
     logger.info(f"Get category stats for {category_id}")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -3065,7 +3067,7 @@ async def get_services(
     offset = (page - 1) * per_page
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3160,7 +3162,7 @@ async def create_service(service_data: ServiceCreate):
     logger.info(f"Create service request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование категории
@@ -3226,7 +3228,7 @@ async def get_service(service_id: int, language: str = Query("ru")):
     logger.info(f"Get service {service_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3292,7 +3294,7 @@ async def update_service(service_id: int, service_data: ServiceUpdate):
     logger.info(f"Update service {service_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование услуги
@@ -3390,7 +3392,7 @@ async def delete_service(service_id: int):
     logger.info(f"Delete service {service_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование услуги
@@ -3423,7 +3425,7 @@ async def force_delete_service(service_id: int):
     logger.info(f"Force delete service {service_id} request")
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование услуги
@@ -3492,7 +3494,7 @@ async def update_master(
     conn = None
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3707,7 +3709,7 @@ async def update_master(
 async def get_master(master_id: int):
     """Получение информации о мастере"""
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3755,7 +3757,7 @@ async def delete_master(master_id: int):
     """Удаление мастера (БЕЗ АВТОРИЗАЦИИ)"""
     
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3800,7 +3802,7 @@ async def delete_master(master_id: int):
 async def get_master_schedule(master_id: int):
     """Получение графика работы мастера (БЕЗ АВТОРИЗАЦИИ)"""
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -3832,7 +3834,7 @@ async def set_master_schedule(
 ):
     """Установка графика работы мастера (БЕЗ АВТОРИЗАЦИИ)"""
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         # Проверяем существование мастера
@@ -3886,7 +3888,7 @@ async def set_master_schedule(
 async def remove_schedule_day(master_id: int, day_of_week: int):
     """Удаление графика на конкретный день (БЕЗ АВТОРИЗАЦИИ)"""
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -3912,7 +3914,7 @@ async def remove_schedule_day(master_id: int, day_of_week: int):
 async def health_check():
     """Проверка здоровья приложения"""
     try:
-        conn = sqlite3.connect("salon.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
         conn.close()

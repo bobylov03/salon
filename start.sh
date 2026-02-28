@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Бот и backend используют одну и ту же базу данных
-export DATABASE_PATH=/app/salon.db
+export DATABASE_PATH=/data/salon.db
 
 # Запускаем backend в фоне — он создаёт salon.db при старте
 uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} &
