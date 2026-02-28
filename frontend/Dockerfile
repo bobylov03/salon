@@ -7,6 +7,11 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+# Принимаем VITE_API_URL как build argument (Railway передаёт из переменных окружения)
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
 # Этап 2: раздача статики через Nginx
