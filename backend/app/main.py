@@ -3999,6 +3999,12 @@ async def debug_add_service(
         }
     }
 
+# ==================== ФРОНТЕНД (статические файлы) ====================
+
+_frontend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static", "frontend")
+if os.path.isdir(_frontend_dir):
+    app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
+
 # ==================== ЗАПУСК СЕРВЕРА ====================
 
 if __name__ == "__main__":

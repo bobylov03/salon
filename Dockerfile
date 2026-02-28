@@ -1,3 +1,17 @@
+# Stage 1: Build frontend
+FROM node:18-slim AS frontend-builder
+
+WORKDIR /frontend
+
+COPY frontend/package*.json ./
+RUN npm ci
+
+COPY frontend/ .
+
+# Build with empty VITE_API_URL so frontend uses relative paths (same host)
+RUN VITE_API_URL="" npm run build
+
+# Stage 2: Python backend + bot
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -15,6 +29,9 @@ COPY backend/ /app/
 # Копируем бота
 COPY bot/ /app/bot/
 COPY run_bot.py /app/
+
+# Копируем собранный фронтенд
+COPY --from=frontend-builder /frontend/dist /app/static/frontend
 
 RUN mkdir -p uploads/masters
 

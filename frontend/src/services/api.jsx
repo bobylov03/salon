@@ -1,8 +1,8 @@
 // services/api.js
 import axios from 'axios';
 
-// Базовый URL API - БЕЗ /api в конце
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Базовый URL API - пустая строка = относительные пути (тот же хост)
+const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 console.log('🔧 API Configuration:');
 console.log('   • API_URL:', API_URL);
