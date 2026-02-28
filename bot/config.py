@@ -10,8 +10,8 @@ class Config:
     # ID администраторов
     ADMIN_IDS = [int(id.strip()) for id in os.getenv('ADMIN_IDS', '').split(',') if id.strip()]
     
-    # Путь к базе данных
-    DATABASE_PATH = os.getenv('DATABASE_PATH', '../salon.db')  # путь от папки bot
+    # Путь к базе данных (в Docker переопределяется через DATABASE_PATH env var)
+    DATABASE_PATH = os.getenv('DATABASE_PATH', '')
     
     # Часовой пояс
     TIMEZONE = os.getenv('TIMEZONE', 'Europe/Moscow')
@@ -27,7 +27,7 @@ class Config:
     DEFAULT_LANGUAGE = 'ru'
     
     # URL для фото мастеров (из FastAPI)
-    BASE_URL = "http://localhost:8000"
+    BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
     
     # Логирование
     LOG_LEVEL = "INFO"
