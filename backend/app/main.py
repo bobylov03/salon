@@ -10,7 +10,7 @@ import logging
 import sqlite3
 import os
 
-DB_PATH = os.environ.get("DATABASE_PATH", "/data/salon.db")
+DB_PATH = os.environ.get("DATABASE_PATH", "/app/salon.db")
 from datetime import datetime, date, timedelta
 import uuid
 from pathlib import Path

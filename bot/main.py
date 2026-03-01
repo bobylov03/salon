@@ -1280,40 +1280,36 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             await query.answer(Messages.get_error_message(language))
             return MASTER_CHOICE
         
-        # Ищем мастеров (по telegram_id), которые предоставляют все услуги
+        # Ищем мастеров, которые предоставляют все услуги
         all_masters = {}
-        
+
         for service_id in selected_services:
             masters_for_service = db.get_masters_for_service(service_id, language)
-            
+
             for master in masters_for_service:
                 master_id = master['id']
-                telegram_id = master.get('telegram_id')
-                
-                if telegram_id:
-                    if telegram_id not in all_masters:
-                        all_masters[telegram_id] = {
-                            'master': master,
-                            'services_count': 1,
-                            'telegram_id': telegram_id
-                        }
-                    else:
-                        all_masters[telegram_id]['services_count'] += 1
-        
+                if master_id not in all_masters:
+                    all_masters[master_id] = {
+                        'master': master,
+                        'services_count': 1,
+                    }
+                else:
+                    all_masters[master_id]['services_count'] += 1
+
         # Фильтруем мастеров
         suitable_masters = []
-        for telegram_id, data in all_masters.items():
-            if data['services_count'] == len(selected_services):
-                suitable_masters.append(data['master'])
-        
+        for master_id, mdata in all_masters.items():
+            if mdata['services_count'] == len(selected_services):
+                suitable_masters.append(mdata['master'])
+
         if not suitable_masters:
             await query.edit_message_text(
                 Messages.get_no_masters_message(language),
                 reply_markup=Keyboards.get_master_choice_keyboard(language)
             )
             return MASTER_CHOICE
-        
-        context.user_data['suitable_masters'] = [m['telegram_id'] for m in suitable_masters if m.get('telegram_id')]
+
+        context.user_data['suitable_masters'] = [m['id'] for m in suitable_masters]
         context.user_data['state'] = MASTER_SELECTION
         
         await query.edit_message_text(
@@ -1368,22 +1364,22 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         appointment_date = date.fromisoformat(appointment_date_str)
         master = db.get_master_by_id(master_id)
         
-        if not master or not master.get('telegram_id'):
+        if not master:
             await query.answer(Messages.get_error_message(language))
             return MASTER_SELECTION
-        
+
         # Получаем доступные слоты по master_id
         total_duration = Utils.calculate_total_duration(selected_services)
         time_slots = db.get_available_time_slots(master_id, appointment_date, total_duration)
-        
+
         if not time_slots:
             await query.edit_message_text(
                 Messages.get_no_time_slots_message(language),
                 reply_markup=Keyboards.get_masters_keyboard([], language)
             )
             return MASTER_SELECTION
-        
-        context.user_data['master_telegram_id'] = master['telegram_id']
+
+        context.user_data['master_telegram_id'] = master.get('telegram_id')
         context.user_data['master_id'] = master_id
         context.user_data['state'] = TIME_SELECTION
         
@@ -1682,14 +1678,14 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
             )
         else:
             # Возврат к выбору конкретного мастера
-            suitable_masters_telegram_ids = context.user_data.get('suitable_masters', [])
+            suitable_master_ids = context.user_data.get('suitable_masters', [])
             suitable_masters = []
-            
-            for telegram_id in suitable_masters_telegram_ids:
-                master = db.get_master_by_telegram_id(telegram_id)
+
+            for mid in suitable_master_ids:
+                master = db.get_master_by_id(mid)
                 if master:
                     suitable_masters.append(master)
-            
+
             context.user_data['state'] = MASTER_SELECTION
             await query.edit_message_text(
                 Messages.get_masters_list_message(language),
