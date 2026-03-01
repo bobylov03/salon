@@ -1347,6 +1347,14 @@ async def create_master(
             (user_id, qualification, description, int(is_active), photo_filename)
         )
         master_id = cursor.lastrowid
+
+        # Автоматически создаём расписание по умолчанию (Пн–Сб, 09:00–18:00)
+        for day in range(6):  # 0=Пн, 1=Вт, 2=Ср, 3=Чт, 4=Пт, 5=Сб
+            cursor.execute(
+                "INSERT INTO master_work_schedule (master_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)",
+                (master_id, day, "09:00", "18:00")
+            )
+
         conn.commit()
 
         # Возвращаем созданного мастера
