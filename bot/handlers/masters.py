@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, types
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
@@ -12,6 +13,7 @@ from ..utils import Utils
 
 router = Router()
 db = Database()
+logger = logging.getLogger(__name__)
 
 # Обработчики календаря
 @router.callback_query(UserStates.date_selection, Text(startswith="change_month_"))
@@ -152,10 +154,13 @@ async def process_choose_master(callback: CallbackQuery, state: FSMContext):
     
     # Ищем мастеров, которые предоставляют ВСЕ выбранные услуги
     all_masters = {}
-    
+
+    logger.info(f"[choose_master] selected_services={selected_services}, date={appointment_date_str}")
+
     for service_id in selected_services:
         masters_for_service = db.get_masters_for_service(service_id)
-        
+        logger.info(f"[choose_master] service_id={service_id} → masters={[m.get('id') for m in masters_for_service]}")
+
         for master in masters_for_service:
             master_id = master['id']
             if master_id not in all_masters:
@@ -165,13 +170,15 @@ async def process_choose_master(callback: CallbackQuery, state: FSMContext):
                 }
             else:
                 all_masters[master_id]['services_count'] += 1
-    
+
     # Фильтруем мастеров, которые предоставляют все услуги
     suitable_masters = []
     for master_id, data in all_masters.items():
         if data['services_count'] == len(selected_services):
             suitable_masters.append(data['master'])
-    
+
+    logger.info(f"[choose_master] all_masters={list(all_masters.keys())}, suitable_masters={[m.get('id') for m in suitable_masters]}")
+
     if not suitable_masters:
         await callback.message.edit_text(
             Messages.get_no_masters_message(language),

@@ -3950,6 +3950,78 @@ _frontend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "
 if os.path.isdir(_frontend_dir):
     app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
 
+# ==================== DEBUG ENDPOINT ====================
+
+@app.get("/debug/master/{master_id}")
+async def debug_master(master_id: int):
+    """Диагностика: показывает services и schedule мастера"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT m.id, m.is_active, u.first_name, u.last_name, u.telegram_id
+            FROM masters m JOIN users u ON m.user_id = u.id
+            WHERE m.id = ?
+        """, (master_id,))
+        master_row = cursor.fetchone()
+        master_info = dict(master_row) if master_row else None
+
+        cursor.execute("""
+            SELECT ms.service_id, ms.is_primary, s.is_active as svc_active,
+                   COALESCE(st.title, 'Service ' || s.id) as title
+            FROM master_services ms
+            JOIN services s ON ms.service_id = s.id
+            LEFT JOIN service_translations st ON s.id = st.service_id AND st.language = 'ru'
+            WHERE ms.master_id = ?
+        """, (master_id,))
+        services = [dict(r) for r in cursor.fetchall()]
+
+        cursor.execute("""
+            SELECT day_of_week, start_time, end_time
+            FROM master_work_schedule WHERE master_id = ?
+            ORDER BY day_of_week
+        """, (master_id,))
+        schedule = [dict(r) for r in cursor.fetchall()]
+
+        cursor.execute("SELECT id, is_active FROM masters ORDER BY id")
+        all_masters = [dict(r) for r in cursor.fetchall()]
+
+        cursor.execute("SELECT ms.master_id, ms.service_id FROM master_services ms ORDER BY master_id")
+        all_ms = [dict(r) for r in cursor.fetchall()]
+
+        conn.close()
+        return {
+            "master": master_info,
+            "services": services,
+            "schedule": schedule,
+            "all_masters_summary": all_masters,
+            "all_master_services": all_ms,
+        }
+    except Exception as e:
+        logger.error(f"Debug error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/debug/service/{service_id}/masters")
+async def debug_service_masters(service_id: int):
+    """Диагностика: какие мастера привязаны к услуге"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT m.id as master_id, m.is_active, u.first_name, u.last_name, ms.is_primary
+            FROM master_services ms
+            JOIN masters m ON ms.master_id = m.id
+            JOIN users u ON m.user_id = u.id
+            WHERE ms.service_id = ?
+        """, (service_id,))
+        masters = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return {"service_id": service_id, "masters": masters}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ==================== ЗАПУСК СЕРВЕРА ====================
 
 if __name__ == "__main__":
