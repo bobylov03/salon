@@ -521,14 +521,33 @@ app.add_middleware(
     expose_headers=["*"]
 )
 
-# Middleware: strip /api prefix so frontend /api/... calls work in production
+# Middleware: strip /api prefix for frontend API calls; serve index.html for browser navigation
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import FileResponse as StarletteFileResponse
+
+_FRONTEND_INDEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static", "frontend", "index.html")
+_BACKEND_PREFIXES = ("/api/", "/uploads/", "/static/", "/docs", "/redoc", "/openapi.json", "/health", "/debug/", "/test/")
 
 class StripApiPrefixMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        if request.scope["path"].startswith("/api/"):
-            request.scope["path"] = request.scope["path"][4:]
+        path = request.scope["path"]
+
+        if path.startswith("/api/"):
+            # Frontend API call — strip the /api prefix
+            request.scope["path"] = path[4:]
             request.scope["raw_path"] = request.scope["path"].encode("utf-8")
+            return await call_next(request)
+
+        # If the browser navigates to a frontend route (Accept: text/html),
+        # and the path is not a known backend/static resource, serve index.html
+        accept = request.headers.get("accept", "")
+        last_segment = path.split("/")[-1]
+        has_extension = "." in last_segment
+        is_backend = any(path.startswith(p) for p in _BACKEND_PREFIXES)
+
+        if "text/html" in accept and not has_extension and not is_backend and os.path.isfile(_FRONTEND_INDEX):
+            return StarletteFileResponse(_FRONTEND_INDEX)
+
         return await call_next(request)
 
 app.add_middleware(StripApiPrefixMiddleware)
