@@ -1162,72 +1162,65 @@ const Services = () => {
   ];
 
   return (
-    <div style={{ padding: '0 24px' }}>
+    <div>
       {/* Заголовок и статистика */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={24}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <Title level={2} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
-                <ShoppingOutlined style={{ marginRight: 12, color: '#1890ff' }} />
-                Управление услугами
-              </Title>
-              <Text type="secondary">Управление категориями и услугами салона</Text>
-            </div>
-            <Space>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={handleRefresh}
-                loading={loading || categoriesLoading}
-              >
-                Обновить
-              </Button>
-            </Space>
-          </div>
+      <div className="page-header" style={{ marginBottom: 16 }}>
+        <div>
+          <Title level={3} className="page-header-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ShoppingOutlined style={{ color: '#1890ff' }} />
+            Управление услугами
+          </Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>Управление категориями и услугами салона</Text>
+        </div>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={handleRefresh}
+          loading={loading || categoriesLoading}
+        >
+          Обновить
+        </Button>
+      </div>
+
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Категорий"
+              value={stats.totalCategories}
+              prefix={<ApartmentOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+            />
+          </Card>
         </Col>
-        <Col span={24}>
-          <Row gutter={16}>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic
-                  title="Всего категорий"
-                  value={stats.totalCategories}
-                  prefix={<ApartmentOutlined />}
-                  valueStyle={{ color: '#1890ff' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic
-                  title="Всего услуг"
-                  value={stats.totalServices}
-                  prefix={<ShoppingOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic
-                  title="Активные услуги"
-                  value={stats.activeServices}
-                  prefix={<CheckCircleOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
-                />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic
-                  title="Неактивные услуги"
-                  value={stats.inactiveServices}
-                  prefix={<CloseCircleOutlined />}
-                  valueStyle={{ color: '#ff4d4f' }}
-                />
-              </Card>
-            </Col>
-          </Row>
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Всего услуг"
+              value={stats.totalServices}
+              prefix={<ShoppingOutlined />}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Активные"
+              value={stats.activeServices}
+              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Неактивные"
+              value={stats.inactiveServices}
+              prefix={<CloseCircleOutlined />}
+              valueStyle={{ color: '#ff4d4f' }}
+            />
+          </Card>
         </Col>
       </Row>
 
@@ -1257,8 +1250,8 @@ const Services = () => {
               </span>
             ),
             children: (
-              <Row gutter={16}>
-                <Col span={6}>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} md={6}>
                   <Card 
                     title={
                       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1350,7 +1343,7 @@ const Services = () => {
                   </Card>
                 </Col>
                 
-                <Col span={18}>
+                <Col xs={24} md={18}>
                   <Card 
                     title={
                       <div>

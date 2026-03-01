@@ -431,8 +431,8 @@ const Clients = () => {
 
   return (
     <div>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small">
             <Statistic
               title="Всего клиентов"
@@ -442,7 +442,7 @@ const Clients = () => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small">
             <Statistic
               title="Активных"
@@ -452,20 +452,20 @@ const Clients = () => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small">
             <Statistic
-              title="Новых (за месяц)"
+              title="Новых за месяц"
               value={overallStats.new}
               prefix={<UserOutlined />}
               valueStyle={{ color: '#fa8c16' }}
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small">
             <Statistic
-              title="С свободными записями"
+              title="С записями"
               value={clients.filter(c => c.appointment_count > 0).length}
               prefix={<CalendarOutlined />}
               valueStyle={{ color: '#722ed1' }}
@@ -479,22 +479,20 @@ const Clients = () => {
           <Space>
             <UserOutlined />
             Клиенты
-            <span style={{ fontSize: '14px', color: '#666', marginLeft: 8 }}>
-              ({overallStats.total} записей)
+            <span style={{ fontSize: '13px', color: '#666' }}>
+              ({overallStats.total})
             </span>
           </Space>
         }
         extra={
-          <Space>
+          <Space wrap size="small">
             <Input.Search
-              placeholder="Поиск по имени, телефону..."
-              style={{ width: 250 }}
+              placeholder="Поиск..."
+              style={{ width: 200 }}
               onSearch={handleSearch}
               allowClear
               onChange={(e) => {
-                if (!e.target.value) {
-                  handleSearch('');
-                }
+                if (!e.target.value) handleSearch('');
               }}
             />
             <Button
@@ -506,7 +504,7 @@ const Clients = () => {
                 setModalVisible(true);
               }}
             >
-              Добавить клиента
+              Добавить
             </Button>
           </Space>
         }
@@ -516,6 +514,7 @@ const Clients = () => {
           dataSource={clients}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 700 }}
           pagination={{
             ...pagination,
             showSizeChanger: true,

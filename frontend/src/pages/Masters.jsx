@@ -57,6 +57,7 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const Masters = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [masters, setMasters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -83,6 +84,12 @@ const Masters = () => {
   useEffect(() => {
     fetchMasters();
   }, [pagination.current, pagination.pageSize, filters]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Очищаем object URLs при размонтировании
   useEffect(() => {
@@ -835,20 +842,20 @@ const Masters = () => {
           </Space>
         }
         extra={
-          <Space>
+          <Space wrap size="small">
             <Button
               icon={<ReloadOutlined />}
               onClick={handleRefresh}
               loading={loading}
             >
-              Обновить
+              {isMobile ? '' : 'Обновить'}
             </Button>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleCreate}
             >
-              Добавить мастера
+              {isMobile ? 'Добавить' : 'Добавить мастера'}
             </Button>
           </Space>
         }

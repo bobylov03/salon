@@ -40,6 +40,43 @@ body {
   background: #f5f7fa !important;
 }
 
+/* ── Page Header Pattern ─────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.page-header-title {
+  margin-bottom: 0 !important;
+  font-size: 20px !important;
+  white-space: nowrap;
+}
+
+.page-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Toolbar / Filter Row ─────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.toolbar .ant-input-search,
+.toolbar .ant-select {
+  min-width: 160px;
+}
+
 /* ── Cards ──────────────────────────────────────────────────────────────── */
 .ant-card {
   border-radius: 12px !important;
@@ -62,10 +99,21 @@ body {
   font-size: 15px !important;
 }
 
+.ant-card .ant-card-body {
+  padding: 20px !important;
+}
+
+/* Stat cards */
+.stat-card .ant-card-body {
+  padding: 20px 24px !important;
+}
+
 /* ── Tables ─────────────────────────────────────────────────────────────── */
 .ant-table-wrapper {
   border-radius: 8px;
   overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .ant-table {
@@ -79,6 +127,7 @@ body {
   border-bottom: 2px solid #f0f0f0 !important;
   font-size: 13px !important;
   padding: 12px 16px !important;
+  white-space: nowrap;
 }
 
 .ant-table-tbody > tr > td {
@@ -183,7 +232,30 @@ body {
   transition: opacity 300ms;
 }
 
-/* ── Mobile ──────────────────────────────────────────────────────────────── */
+/* ── Responsive: LG (max 1200px) ─────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .ant-card .ant-card-body {
+    padding: 16px !important;
+  }
+}
+
+/* ── Responsive: MD (max 992px) ──────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .page-header-title {
+    font-size: 18px !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 10px 12px !important;
+  }
+
+  .ant-card .ant-card-body {
+    padding: 14px !important;
+  }
+}
+
+/* ── Responsive: SM (max 768px) ──────────────────────────────────────────── */
 @media (max-width: 767px) {
   .ant-table-thead > tr > th,
   .ant-table-tbody > tr > td {
@@ -193,6 +265,10 @@ body {
 
   .ant-card {
     border-radius: 8px !important;
+  }
+
+  .ant-card .ant-card-body {
+    padding: 12px !important;
   }
 
   .ant-statistic-content-value {
@@ -207,12 +283,109 @@ body {
     margin: 8px !important;
     max-width: calc(100vw - 16px) !important;
   }
+
+  .page-header {
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+
+  .page-header-title {
+    font-size: 16px !important;
+  }
+
+  .page-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .page-actions .ant-btn {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .toolbar {
+    gap: 8px;
+  }
+
+  .toolbar .ant-input-search {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toolbar .ant-select {
+    min-width: 120px;
+  }
+
+  /* Full-width table scroll on mobile */
+  .ant-table-wrapper {
+    margin: 0 -12px;
+    width: calc(100% + 24px);
+    border-radius: 0 !important;
+  }
+
+  /* Stats row gutter fix */
+  .ant-row {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+  }
+
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  /* Drawer footer on mobile */
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+    display: flex;
+    gap: 8px;
+  }
+
+  .ant-modal-footer .ant-btn {
+    flex: 1;
+    margin: 0 !important;
+  }
+
+  /* Card head on mobile */
+  .ant-card .ant-card-head {
+    padding: 0 12px !important;
+    min-height: 44px !important;
+  }
+
+  .ant-card .ant-card-head-title {
+    font-size: 13px !important;
+  }
+
+  /* Form grid on mobile */
+  .ant-form-item {
+    margin-bottom: 12px !important;
+  }
 }
 
+/* ── Responsive: XS (max 480px) ──────────────────────────────────────────── */
 @media (max-width: 480px) {
   .ant-table-thead > tr > th,
   .ant-table-tbody > tr > td {
     padding: 6px 8px !important;
     font-size: 11px !important;
+  }
+
+  .page-header-title {
+    font-size: 15px !important;
+  }
+
+  .ant-statistic-content-value {
+    font-size: 20px !important;
+  }
+
+  .ant-btn {
+    font-size: 13px !important;
+  }
+
+  .ant-card .ant-card-body {
+    padding: 10px !important;
   }
 }

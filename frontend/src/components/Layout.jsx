@@ -390,23 +390,23 @@ const AdminLayout = () => {
         </Header>
 
         <Content style={{
-          margin: isMobile ? '12px 10px 0' : '24px 24px 0',
+          margin: isMobile ? '12px 8px 0' : '20px 20px 0',
           padding: 0,
           minHeight: 280,
         }}>
           <div style={{
-            padding: isMobile ? '16px 14px' : '24px',
+            padding: isMobile ? '14px 12px' : '24px',
             background: colorBgContainer,
-            borderRadius: borderRadiusLG,
+            borderRadius: isMobile ? 8 : borderRadiusLG,
             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
-            minHeight: 'calc(100vh - 116px)',
+            minHeight: 'calc(100vh - 112px)',
+            overflow: 'hidden',
           }}>
             <Outlet />
           </div>
 
           <div style={{
-            margin: '12px 0',
-            padding: '10px 24px',
+            padding: '10px 16px',
             textAlign: 'center',
             color: '#bbb',
             fontSize: '12px',

@@ -186,6 +186,7 @@ const timeSlots = [
 ];
 
 const Appointments = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [appointments, setAppointments] = useState([]);
   const [masters, setMasters] = useState([]);
   const [clients, setClients] = useState([]);
@@ -245,6 +246,12 @@ const Appointments = () => {
   useEffect(() => {
     fetchAllData();
   }, [filters, quickFilters]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (activeView === 'calendar' && selectedDate) {
@@ -1365,95 +1372,93 @@ const Appointments = () => {
       {notificationContextHolder}
       
       {/* Статистика */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={3}>
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
-              title="Всего записей"
+              title="Всего"
               value={stats.total}
               prefix={<CalendarOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: '#1890ff', fontSize: isMobile ? 18 : 24 }}
             />
           </Card>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
               title="Подтверждено"
               value={stats.confirmed}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              valueStyle={{ color: '#3f8600', fontSize: isMobile ? 18 : 24 }}
             />
           </Card>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
               title="Ожидает"
               value={stats.pending}
               prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              valueStyle={{ color: '#fa8c16', fontSize: isMobile ? 18 : 24 }}
             />
           </Card>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
               title="Завершено"
               value={stats.completed}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: '#722ed1', fontSize: isMobile ? 18 : 24 }}
             />
           </Card>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
               title="Выручка"
               value={stats.revenue}
               prefix={<MoneyCollectOutlined />}
-              valueStyle={{ color: '#13c2c2' }}
+              valueStyle={{ color: '#13c2c2', fontSize: isMobile ? 18 : 24 }}
               suffix="₺"
             />
           </Card>
         </Col>
-        <Col span={3}>
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Statistic
               title="Ср. время"
               value={stats.averageTime}
               prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#eb2f96' }}
+              valueStyle={{ color: '#eb2f96', fontSize: isMobile ? 18 : 24 }}
               suffix="мин"
             />
           </Card>
         </Col>
-        <Col span={3}>
-          <Card size="small" hoverable>
-            <Progress
-              type="dashboard"
-              percent={stats.utilizationRate}
-              strokeColor={{
-                '0%': '#108ee9',
-                '100%': '#87d068',
-              }}
-              format={percent => `${percent}%`}
-              width={80}
-            />
-            <div style={{ textAlign: 'center', marginTop: '8px', fontSize: '12px' }}>
-              Загруженность
-            </div>
-          </Card>
-        </Col>
-        <Col span={3}>
+        {!isMobile && (
+          <Col xs={12} sm={8} md={3}>
+            <Card size="small" hoverable style={{ textAlign: 'center' }}>
+              <Progress
+                type="dashboard"
+                percent={stats.utilizationRate}
+                strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
+                format={percent => `${percent}%`}
+                width={60}
+              />
+              <div style={{ marginTop: 4, fontSize: '11px', color: '#666' }}>Загруженность</div>
+            </Card>
+          </Col>
+        )}
+        <Col xs={12} sm={8} md={3}>
           <Card size="small" hoverable>
             <Button
               type="primary"
               onClick={fetchAllData}
               icon={<SyncOutlined spin={loading} />}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: '100%' }}
+              size={isMobile ? 'small' : 'middle'}
             >
-              Обновить
+              {isMobile ? 'Обновить' : 'Обновить данные'}
             </Button>
           </Card>
         </Col>
@@ -1529,30 +1534,39 @@ const Appointments = () => {
       {/* Основной контент */}
       <Card
         title={
-          <Space>
-            <ScheduleOutlined />
-            Записи на услуги
-            <Badge count={appointments.length} showZero style={{ backgroundColor: '#52c41a' }} />
-          </Space>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+            <Space>
+              <ScheduleOutlined />
+              Записи на услуги
+              <Badge count={appointments.length} showZero style={{ backgroundColor: '#52c41a' }} />
+            </Space>
+            {isMobile && (
+              <Radio.Group
+                value={activeView}
+                onChange={(e) => setActiveView(e.target.value)}
+                buttonStyle="solid"
+                size="small"
+              >
+                <Radio.Button value="table"><TableOutlined /></Radio.Button>
+                <Radio.Button value="calendar"><CalendarOutlined /></Radio.Button>
+                <Radio.Button value="timeline"><ScheduleOutlined /></Radio.Button>
+              </Radio.Group>
+            )}
+          </div>
         }
         extra={
-          <Space>
-            <Radio.Group 
-              value={activeView} 
-              onChange={(e) => setActiveView(e.target.value)}
-              buttonStyle="solid"
-            >
-              <Radio.Button value="table">
-                <TableOutlined /> Таблица
-              </Radio.Button>
-              <Radio.Button value="calendar">
-                <CalendarOutlined /> Календарь
-              </Radio.Button>
-              <Radio.Button value="timeline">
-                <ScheduleOutlined /> Расписание
-              </Radio.Button>
-            </Radio.Group>
-            <Divider type="vertical" />
+          <Space wrap>
+            {!isMobile && (
+              <Radio.Group
+                value={activeView}
+                onChange={(e) => setActiveView(e.target.value)}
+                buttonStyle="solid"
+              >
+                <Radio.Button value="table"><TableOutlined /> Таблица</Radio.Button>
+                <Radio.Button value="calendar"><CalendarOutlined /> Календарь</Radio.Button>
+                <Radio.Button value="timeline"><ScheduleOutlined /> Расписание</Radio.Button>
+              </Radio.Group>
+            )}
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -1568,7 +1582,7 @@ const Appointments = () => {
               }}
               disabled={loadingClients}
             >
-              Новая запись
+              {isMobile ? 'Добавить' : 'Новая запись'}
             </Button>
           </Space>
         }

@@ -235,11 +235,11 @@ const Logs = () => {
 
   return (
     <div>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={24} md={6}>
           <Card size="small">
-            <Descriptions title="Статистика логов" column={1} size="small">
-              <Descriptions.Item label="Всего записей">
+            <Descriptions title="Статистика" column={2} size="small">
+              <Descriptions.Item label="Всего">
                 <Tag color="blue">{stats.total}</Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Сегодня">
@@ -248,16 +248,16 @@ const Logs = () => {
               <Descriptions.Item label="Ошибки">
                 <Tag color="red">{stats.errors}</Tag>
               </Descriptions.Item>
-              <Descriptions.Item label="Предупреждения">
+              <Descriptions.Item label="Предупр.">
                 <Tag color="orange">{stats.warnings}</Tag>
               </Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
-        <Col span={18}>
-          <Card title="Фильтры логов">
-            <Row gutter={16}>
-              <Col span={6}>
+        <Col xs={24} md={18}>
+          <Card title="Фильтры" size="small">
+            <Row gutter={[8, 8]}>
+              <Col xs={24} sm={12} md={6}>
                 <Select
                   placeholder="Администратор"
                   style={{ width: '100%' }}
@@ -269,7 +269,7 @@ const Logs = () => {
                   <Option value="admin3">Админ Иван</Option>
                 </Select>
               </Col>
-              <Col span={6}>
+              <Col xs={24} sm={12} md={6}>
                 <Select
                   placeholder="Действие"
                   style={{ width: '100%' }}
@@ -282,31 +282,22 @@ const Logs = () => {
                   <Option value="LOGIN">Вход</Option>
                 </Select>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={16} md={8}>
                 <RangePicker
                   style={{ width: '100%' }}
                   onChange={(dates) => setFilters({ ...filters, dateRange: dates })}
                 />
               </Col>
-              <Col span={4}>
+              <Col xs={24} sm={8} md={4}>
                 <Button
                   icon={<FilterOutlined />}
-                  onClick={() => {
-                    setFilters({
-                      admin: null,
-                      action: null,
-                      dateRange: null,
-                      search: '',
-                    });
-                  }}
+                  onClick={() => setFilters({ admin: null, action: null, dateRange: null, search: '' })}
                   style={{ width: '100%' }}
                 >
                   Сбросить
                 </Button>
               </Col>
-            </Row>
-            <Row style={{ marginTop: 16 }}>
-              <Col span={24}>
+              <Col xs={24}>
                 <Search
                   placeholder="Поиск по описанию..."
                   onSearch={(value) => setFilters({ ...filters, search: value })}
@@ -318,12 +309,13 @@ const Logs = () => {
         </Col>
       </Row>
 
-      <Card title="Журнал действий администраторов">
+      <Card title="Журнал действий">
         <Table
           columns={columns}
           dataSource={logs}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 700 }}
           pagination={{
             pageSize: 20,
             showSizeChanger: true,

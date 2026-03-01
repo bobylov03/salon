@@ -222,36 +222,44 @@ const Bonuses = () => {
 
   return (
     <div>
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Statistic
-            title="Всего клиентов"
-            value={stats.totalClients}
-            prefix={<UserOutlined />}
-          />
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Всего клиентов"
+              value={stats.totalClients}
+              prefix={<UserOutlined />}
+            />
+          </Card>
         </Col>
-        <Col span={6}>
-          <Statistic
-            title="С бонусами"
-            value={stats.activeClients}
-            prefix={<GiftOutlined />}
-          />
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="С бонусами"
+              value={stats.activeClients}
+              prefix={<GiftOutlined />}
+            />
+          </Card>
         </Col>
-        <Col span={6}>
-          <Statistic
-            title="Общий баланс"
-            value={stats.totalBalance}
-            prefix={<DollarOutlined />}
-            suffix="бонусов"
-          />
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Общий баланс"
+              value={stats.totalBalance}
+              prefix={<DollarOutlined />}
+              suffix="бон."
+            />
+          </Card>
         </Col>
-        <Col span={6}>
-          <Statistic
-            title="Средний баланс"
-            value={stats.averageBalance}
-            prefix={<DollarOutlined />}
-            suffix="бонусов"
-          />
+        <Col xs={12} sm={12} md={6}>
+          <Card size="small">
+            <Statistic
+              title="Средний баланс"
+              value={stats.averageBalance}
+              prefix={<DollarOutlined />}
+              suffix="бон."
+            />
+          </Card>
         </Col>
       </Row>
 
@@ -261,6 +269,7 @@ const Bonuses = () => {
           dataSource={clients}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 600 }}
           pagination={{ pageSize: 10 }}
         />
       </Card>

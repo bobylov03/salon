@@ -358,10 +358,10 @@ const Schedule = () => {
           )
         }
       >
-        <Row gutter={16} style={{ marginBottom: 24 }}>
-          <Col span={8}>
-            <Select 
-              placeholder="Выберите мастера" 
+        <Row gutter={[16, 12]} style={{ marginBottom: 24 }}>
+          <Col xs={24} md={8}>
+            <Select
+              placeholder="Выберите мастера"
               style={{ width: '100%' }}
               onChange={(value) => {
                 setSelectedMaster(value);
@@ -403,7 +403,7 @@ const Schedule = () => {
             </Select>
           </Col>
           
-          <Col span={16}>
+          <Col xs={24} md={16}>
             {selectedMasterInfo && (
               <Alert
                 message={
@@ -440,14 +440,13 @@ const Schedule = () => {
         
         {selectedMaster ? (
           <>
-            <Table 
+            <Table
               columns={columns}
               dataSource={allDays}
               loading={loading}
               pagination={false}
-              locale={{
-                emptyText: 'Загрузка графика...'
-              }}
+              scroll={{ x: 600 }}
+              locale={{ emptyText: 'Загрузка графика...' }}
               style={{ marginTop: 16 }}
             />
             
@@ -459,31 +458,29 @@ const Schedule = () => {
               border: '1px solid #f0f0f0'
             }}>
               <Text strong>Статистика:</Text>
-              <Row gutter={16} style={{ marginTop: 8 }}>
-                <Col span={8}>
+              <Row gutter={[16, 8]} style={{ marginTop: 8 }}>
+                <Col xs={8}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
                       {scheduleData.length}
                     </div>
-                    <div style={{ color: '#666' }}>Рабочих дней</div>
+                    <div style={{ color: '#666', fontSize: 12 }}>Рабочих дней</div>
                   </div>
                 </Col>
-                <Col span={8}>
+                <Col xs={8}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff4d4f' }}>
                       {7 - scheduleData.length}
                     </div>
-                    <div style={{ color: '#666' }}>Выходных дней</div>
+                    <div style={{ color: '#666', fontSize: 12 }}>Выходных дней</div>
                   </div>
                 </Col>
-                <Col span={8}>
+                <Col xs={8}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1890ff' }}>
-                      {scheduleData.length > 0 ? 
-                        scheduleData.length * 8 + 'ч' : '0ч'
-                      }
+                      {scheduleData.length > 0 ? scheduleData.length * 8 + 'ч' : '0ч'}
                     </div>
-                    <div style={{ color: '#666' }}>Рабочих часов в неделю</div>
+                    <div style={{ color: '#666', fontSize: 12 }}>Часов в неделю</div>
                   </div>
                 </Col>
               </Row>

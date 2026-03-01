@@ -186,6 +186,13 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState(30);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [chartData, setChartData] = useState([]);
   const [mastersData, setMastersData] = useState([]);
   const [servicesData, setServicesData] = useState([]);
@@ -277,13 +284,13 @@ const Dashboard = () => {
   return (
     <div>
       {/* Заголовок и фильтры */}
-      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Title level={2}>Дашборд</Title>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <div className="page-header">
+        <Title level={2} className="page-header-title">Дашборд</Title>
+        <div className="page-actions">
           <Select
             value={period}
             onChange={setPeriod}
-            style={{ width: 120 }}
+            style={{ width: isMobile ? '100%' : 120 }}
             options={[
               { value: 7, label: '7 дней' },
               { value: 30, label: '30 дней' },
@@ -291,7 +298,7 @@ const Dashboard = () => {
               { value: 365, label: 'Год' },
             ]}
           />
-          <Tag color="blue" style={{ cursor: 'pointer' }} onClick={handleRefresh}>
+          <Tag color="blue" style={{ cursor: 'pointer', padding: '4px 10px', fontSize: '13px' }} onClick={handleRefresh}>
             Обновить
           </Tag>
         </div>
@@ -310,13 +317,13 @@ const Dashboard = () => {
 
       {/* Статистика */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
+        <Col xs={12} sm={12} md={6}>
+          <Card className="stat-card">
             <Statistic
               title="Всего записей"
               value={stats.appointments.total}
-              prefix={<CalendarOutlined />}
-              valueStyle={{ fontSize: '28px' }}
+              prefix={<CalendarOutlined style={{ color: '#1890ff' }} />}
+              valueStyle={{ fontSize: isMobile ? '22px' : '28px' }}
             />
             <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
               <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 4 }} />
@@ -324,13 +331,13 @@ const Dashboard = () => {
             </div>
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
+        <Col xs={12} sm={12} md={6}>
+          <Card className="stat-card">
             <Statistic
               title="Клиенты"
               value={stats.clients.total}
-              prefix={<TeamOutlined />}
-              valueStyle={{ fontSize: '28px' }}
+              prefix={<TeamOutlined style={{ color: '#722ed1' }} />}
+              valueStyle={{ fontSize: isMobile ? '22px' : '28px' }}
             />
             <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
               <UserAddOutlined style={{ color: '#1890ff', marginRight: 4 }} />
@@ -338,14 +345,14 @@ const Dashboard = () => {
             </div>
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
+        <Col xs={12} sm={12} md={6}>
+          <Card className="stat-card">
             <Statistic
               title="Выручка"
               value={stats.revenue.total}
-              prefix={<DollarOutlined />}
+              prefix={<DollarOutlined style={{ color: '#3f8600' }} />}
               suffix="₺"
-              valueStyle={{ fontSize: '28px', color: '#3f8600' }}
+              valueStyle={{ fontSize: isMobile ? '22px' : '28px', color: '#3f8600' }}
             />
             <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
               <RiseOutlined style={{ color: '#3f8600', marginRight: 4 }} />
@@ -353,14 +360,14 @@ const Dashboard = () => {
             </div>
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
+        <Col xs={12} sm={12} md={6}>
+          <Card className="stat-card">
             <Statistic
               title="Мастера"
               value={stats.masters.active}
               suffix={`/ ${stats.masters.total || '?'}`}
-              prefix={<TeamOutlined />}
-              valueStyle={{ fontSize: '28px' }}
+              prefix={<TeamOutlined style={{ color: '#fa8c16' }} />}
+              valueStyle={{ fontSize: isMobile ? '22px' : '28px' }}
             />
             <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
               <ClockCircleOutlined style={{ color: '#faad14', marginRight: 4 }} />
@@ -373,38 +380,37 @@ const Dashboard = () => {
       {/* Графики */}
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card 
-            title="Динамика записей" 
-            style={{ height: 400 }}
-            extra={
-              <Tag color="blue">{period} дней</Tag>
-            }
+          <Card
+            title="Динамика записей"
+            extra={<Tag color="blue">{period} дней</Tag>}
           >
             {loading && chartData.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '100px' }}>
+              <div style={{ textAlign: 'center', padding: '80px 0' }}>
                 <Spin />
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
+              <ResponsiveContainer width="100%" height={isMobile ? 220 : 300}>
+                <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="appointments" 
-                    stroke="#1890ff" 
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Line
+                    type="monotone"
+                    dataKey="appointments"
+                    stroke="#1890ff"
                     name="Всего записей"
                     strokeWidth={2}
+                    dot={false}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="completed" 
-                    stroke="#52c41a" 
+                  <Line
+                    type="monotone"
+                    dataKey="completed"
+                    stroke="#52c41a"
                     name="Завершено"
                     strokeWidth={2}
+                    dot={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -412,32 +418,29 @@ const Dashboard = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card 
-            title="Топ услуг" 
-            style={{ height: 400 }}
-            extra={
-              <Tag color="green">По выручке</Tag>
-            }
+          <Card
+            title="Топ услуг"
+            extra={<Tag color="green">По выручке</Tag>}
           >
             {loading && servicesData.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '100px' }}>
+              <div style={{ textAlign: 'center', padding: '80px 0' }}>
                 <Spin />
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={servicesData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="title" />
-                  <YAxis />
-                  <Tooltip 
+              <ResponsiveContainer width="100%" height={isMobile ? 220 : 300}>
+                <BarChart data={servicesData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="title" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip
                     formatter={(value, name) => {
                       if (name === 'revenue') return [`${value} ₺`, 'Выручка'];
                       return [value, 'Количество'];
                     }}
                   />
-                  <Legend />
-                  <Bar dataKey="service_count" fill="#8884d8" name="Количество" />
-                  <Bar dataKey="revenue" fill="#82ca9d" name="Выручка" />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="service_count" fill="#8884d8" name="Количество" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="revenue" fill="#82ca9d" name="Выручка" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -520,22 +523,22 @@ const Dashboard = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card 
-            title="Распределение услуг" 
+          <Card
+            title="Распределение услуг"
             extra={<Tag color="purple">Популярность</Tag>}
             loading={loading && servicesData.length === 0}
           >
             {servicesData.length > 0 ? (
               <>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={isMobile ? 200 : 280}>
                   <PieChart>
                     <Pie
                       data={servicesData}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={(entry) => `${entry.title}: ${entry.service_count}`}
-                      outerRadius={80}
+                      label={isMobile ? null : (entry) => `${entry.title}: ${entry.service_count}`}
+                      outerRadius={isMobile ? 70 : 90}
                       fill="#8884d8"
                       dataKey="service_count"
                       name="Количество"
@@ -544,10 +547,10 @@ const Dashboard = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value, name) => [value, name === 'service_count' ? 'Количество' : 'Выручка']}
                     />
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div style={{ marginTop: 16 }}>
