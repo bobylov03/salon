@@ -763,8 +763,8 @@ const Masters = () => {
     const totalServices = masters.reduce((sum, m) => sum + (m.services_count || 0), 0);
     
     return (
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col span={6}>
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small" hoverable>
             <StatisticCard
               title="Всего мастеров"
@@ -774,7 +774,7 @@ const Masters = () => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small" hoverable>
             <StatisticCard
               title="Активных"
@@ -784,7 +784,7 @@ const Masters = () => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small" hoverable>
             <StatisticCard
               title="С услугами"
@@ -794,7 +794,7 @@ const Masters = () => {
             />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={12} sm={12} md={6}>
           <Card size="small" hoverable>
             <StatisticCard
               title="Всего услуг"
@@ -856,8 +856,8 @@ const Masters = () => {
       >
         {renderStats()}
         
-        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-          <Col span={8}>
+        <Row gutter={[12, 12]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={24} md={8}>
             <Input
               placeholder="Поиск по имени, телефону или Telegram..."
               prefix={<SearchOutlined />}
@@ -866,7 +866,7 @@ const Masters = () => {
               size="middle"
             />
           </Col>
-          <Col span={8}>
+          <Col xs={12} sm={12} md={8}>
             <Select
               placeholder="Фильтр по статусу"
               style={{ width: '100%' }}
@@ -878,7 +878,7 @@ const Masters = () => {
               <Option value={false}>Неактивен</Option>
             </Select>
           </Col>
-          <Col span={8}>
+          <Col xs={12} sm={12} md={8}>
             <Select
               placeholder="Фильтр по услугам"
               style={{ width: '100%' }}

@@ -7,23 +7,16 @@ import {
   Input,
   Button,
   Typography,
-  Space,
   message,
-  Layout,
-  Row,
-  Col,
-  Divider,
 } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
-  ShopOutlined,
   SafetyOutlined,
 } from '@ant-design/icons';
 import { authAPI } from '../services/api';
 
 const { Title, Text } = Typography;
-const { Content } = Layout;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -60,88 +53,103 @@ const Login = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
-      <Content>
-        <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
-          <Col xs={24} sm={20} md={16} lg={12} xl={8}>
-            <Card 
-              bordered={false}
-              style={{
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                borderRadius: 8,
-              }}
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+    }}>
+      <div style={{ width: '100%', maxWidth: '400px' }}>
+        {/* Logo area */}
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{
+            width: '68px',
+            height: '68px',
+            borderRadius: '18px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.5)',
+            fontSize: '26px',
+            fontWeight: 'bold',
+            color: 'white',
+          }}>
+            BS
+          </div>
+          <Title level={2} style={{ color: 'white', marginBottom: '6px' }}>
+            Beauty Salon
+          </Title>
+          <Text style={{ color: 'rgba(255, 255, 255, 0.55)', fontSize: '14px' }}>
+            Панель администратора
+          </Text>
+        </div>
+
+        {/* Login card */}
+        <Card
+          bordered={false}
+          style={{
+            borderRadius: '16px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.35)',
+            padding: '8px',
+          }}
+        >
+          <Form
+            name="login"
+            onFinish={onFinish}
+            layout="vertical"
+            size="large"
+          >
+            <Form.Item
+              name="username"
+              label="Логин"
+              rules={[{ required: true, message: 'Введите логин' }]}
             >
-              <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                {/* Заголовок */}
-                <div style={{ textAlign: 'center' }}>
-                  <ShopOutlined 
-                    style={{ 
-                      fontSize: 48, 
-                      color: '#1890ff',
-                      marginBottom: 16 
-                    }} 
-                  />
-                  <Title level={2} style={{ marginBottom: 8 }}>
-                    Beauty Salon Admin
-                  </Title>
-                  <Text type="secondary">
-                    Панель управления салоном красоты
-                  </Text>
-                </div>
+              <Input
+                prefix={<UserOutlined style={{ color: '#bbb' }} />}
+                placeholder="Введите логин"
+              />
+            </Form.Item>
 
-                <Divider />
+            <Form.Item
+              name="password"
+              label="Пароль"
+              rules={[{ required: true, message: 'Введите пароль' }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined style={{ color: '#bbb' }} />}
+                placeholder="Введите пароль"
+              />
+            </Form.Item>
 
-                {/* Форма входа */}
-                <Form
-                  name="login"
-                  onFinish={onFinish}
-                  layout="vertical"
-                  size="large"
-                >
-                  <Form.Item
-                    name="username"
-                    label="Логин"
-                    rules={[{ required: true, message: 'Введите логин' }]}
-                  >
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="salon_admin"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="password"
-                    label="Пароль"
-                    rules={[
-                      { required: true, message: 'Введите пароль' }
-                    ]}
-                  >
-                    <Input.Password
-                      prefix={<LockOutlined />}
-                      placeholder="••••••"
-                    />
-                  </Form.Item>
-
-                  <Form.Item style={{ marginTop: 24 }}>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={loading}
-                      block
-                      size="large"
-                      icon={<SafetyOutlined />}
-                    >
-                      Войти в систему
-                    </Button>
-                  </Form.Item>
-                </Form>
-
-              </Space>
-            </Card>
-          </Col>
-        </Row>
-      </Content>
-    </Layout>
+            <Form.Item style={{ marginTop: '28px', marginBottom: 0 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                size="large"
+                icon={<SafetyOutlined />}
+                style={{
+                  height: '48px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  boxShadow: '0 4px 16px rgba(102, 126, 234, 0.45)',
+                }}
+              >
+                Войти в систему
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </div>
+    </div>
   );
 };
 
