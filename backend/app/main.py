@@ -2231,59 +2231,54 @@ async def update_client(client_id: int, client_data: ClientUpdate):
         raise HTTPException(status_code=500, detail=f"Ошибка при обновлении клиента: {str(e)}")
 
 @app.delete("/clients/{client_id}")
-async def delete_client(client_id: int):
-    """Удаление клиента"""
-    logger.info(f"Delete client {client_id} request")
-    
+async def delete_client(client_id: int, force: bool = False):
+    """Удаление клиента. При force=true удаляет вместе со всеми связанными записями."""
+    logger.info(f"Delete client {client_id} request, force={force}")
+
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        
+
         # Проверяем существование клиента
         cursor.execute("SELECT id FROM users WHERE id = ? AND role = 'client'", (client_id,))
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Клиент не найден")
-        
-        # Проверяем, есть ли у клиента записи
-        cursor.execute("SELECT id FROM appointments WHERE client_id = ? LIMIT 1", (client_id,))
-        if cursor.fetchone():
+
+        # Считаем записи клиента
+        cursor.execute("SELECT COUNT(*) FROM appointments WHERE client_id = ?", (client_id,))
+        appointment_count = cursor.fetchone()[0]
+
+        if appointment_count > 0 and not force:
+            conn.close()
             raise HTTPException(
-                status_code=400, 
-                detail="Невозможно удалить клиента, у которого есть записи. "
-                       "Сначала удалите или отмените все записи клиента."
+                status_code=409,
+                detail=f"has_appointments:{appointment_count}"
             )
-        
-        # Проверяем, есть ли у клиента отзывы
-        cursor.execute("SELECT id FROM reviews WHERE client_id = ? LIMIT 1", (client_id,))
-        if cursor.fetchone():
-            raise HTTPException(
-                status_code=400, 
-                detail="Невозможно удалить клиента, у которого есть отзывы. "
-                       "Сначала удалите все отзывы клиента."
-            )
-        
-        # Проверяем, есть ли у клиента бонусы
-        cursor.execute("SELECT id FROM bonuses WHERE client_id = ? LIMIT 1", (client_id,))
-        if cursor.fetchone():
-            raise HTTPException(
-                status_code=400, 
-                detail="Невозможно удалить клиента, у которого есть бонусы. "
-                       "Сначала обнулите бонусный счет клиента."
-            )
-        
-        # Удаляем клиента
+
+        if force:
+            # Каскадное удаление: appointment_services → appointments → reviews → bonuses → user
+            cursor.execute("""
+                DELETE FROM appointment_services
+                WHERE appointment_id IN (SELECT id FROM appointments WHERE client_id = ?)
+            """, (client_id,))
+            cursor.execute("""
+                DELETE FROM review_photos
+                WHERE review_id IN (SELECT id FROM reviews WHERE client_id = ?)
+            """, (client_id,))
+            cursor.execute("DELETE FROM appointments WHERE client_id = ?", (client_id,))
+            cursor.execute("DELETE FROM reviews WHERE client_id = ?", (client_id,))
+            cursor.execute("DELETE FROM bonus_history WHERE client_id = ?", (client_id,))
+            cursor.execute("DELETE FROM bonuses WHERE client_id = ?", (client_id,))
+
         cursor.execute("DELETE FROM users WHERE id = ?", (client_id,))
-        
+
         conn.commit()
         conn.close()
-        
-        logger.info(f"Client {client_id} deleted successfully")
-        
-        return {
-            "success": True,
-            "message": "Клиент успешно удален"
-        }
-    
+
+        logger.info(f"Client {client_id} deleted successfully (force={force})")
+
+        return {"success": True, "message": "Клиент успешно удален"}
+
     except HTTPException:
         raise
     except Exception as e:

@@ -221,22 +221,39 @@ const Clients = () => {
 };
 
   const handleDelete = async (id) => {
+    const doDelete = async (force = false) => {
+      try {
+        await axios.delete(`/clients/${id}${force ? '?force=true' : ''}`);
+        message.success('Клиент удален');
+        fetchClients();
+      } catch (error) {
+        if (error.response?.status === 409) {
+          const detail = error.response.data.detail || '';
+          const count = detail.startsWith('has_appointments:')
+            ? parseInt(detail.split(':')[1], 10)
+            : null;
+          const countText = count ? ` (${count} ${count === 1 ? 'запись' : count < 5 ? 'записи' : 'записей'})` : '';
+          Modal.confirm({
+            title: 'У клиента есть записи',
+            content: `У этого клиента есть активные записи${countText}. При удалении клиента все его записи также будут удалены. Вы уверены?`,
+            okText: 'Да, удалить',
+            okType: 'danger',
+            cancelText: 'Отмена',
+            onOk: () => doDelete(true),
+          });
+        } else {
+          message.error(error.response?.data?.detail || 'Ошибка при удалении');
+        }
+      }
+    };
+
     Modal.confirm({
       title: 'Удалить клиента?',
       content: 'Все данные клиента будут удалены. Продолжить?',
-      onOk: async () => {
-        try {
-          await axios.delete(`/clients/${id}`);
-          message.success('Клиент удален');
-          fetchClients();
-        } catch (error) {
-          if (error.response?.status === 400) {
-            message.error(error.response.data.detail || 'Невозможно удалить клиента');
-          } else {
-            message.error(error.response?.data?.detail || 'Ошибка при удалении');
-          }
-        }
-      },
+      okText: 'Удалить',
+      okType: 'danger',
+      cancelText: 'Отмена',
+      onOk: () => doDelete(false),
     });
   };
 
